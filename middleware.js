@@ -7,16 +7,32 @@ const isProtectedRoute = createRouteMatcher([
   "/transaction(.*)",
 ]);
 
-// Simplified Clerk middleware without Arcjet
-export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+// Check if Clerk is properly configured
+const isClerkConfigured = () => {
+  return process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY;
+};
 
-  if (!userId && isProtectedRoute(req)) {
-    const { redirectToSignIn } = await auth();
-    return redirectToSignIn();
+// Simplified Clerk middleware with error handling
+export default clerkMiddleware(async (auth, req) => {
+  // If Clerk is not configured, allow all requests to pass through
+  if (!isClerkConfigured()) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  try {
+    const { userId } = await auth();
+
+    if (!userId && isProtectedRoute(req)) {
+      const { redirectToSignIn } = await auth();
+      return redirectToSignIn();
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+    // If there's an error, allow the request to continue
+    return NextResponse.next();
+  }
 });
 
 export const config = {
