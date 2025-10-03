@@ -10,17 +10,25 @@ import { Plus } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
 
 export default async function DashboardPage() {
-  const [accounts, transactions] = await Promise.all([
-    getUserAccounts(),
-    getDashboardData(),
-  ]);
-
-  const defaultAccount = accounts?.find((account) => account.isDefault);
-
-  // Get budget for default account
+  let accounts = [];
+  let transactions = [];
   let budgetData = null;
-  if (defaultAccount) {
-    budgetData = await getCurrentBudget(defaultAccount.id);
+
+  try {
+    [accounts, transactions] = await Promise.all([
+      getUserAccounts().catch(() => []),
+      getDashboardData().catch(() => []),
+    ]);
+
+    const defaultAccount = accounts?.find((account) => account.isDefault);
+
+    // Get budget for default account
+    if (defaultAccount) {
+      budgetData = await getCurrentBudget(defaultAccount.id).catch(() => null);
+    }
+  } catch (error) {
+    console.error("Dashboard data loading error:", error);
+    // Fallback to empty data
   }
 
   return (

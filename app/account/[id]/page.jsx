@@ -8,7 +8,25 @@ export const dynamic = "force-dynamic";
 
 export default async function AccountPage({ params }) {
   const { id } = await params;
-  const accountData = await getAccountWithTransactions(id);
+  let accountData = null;
+
+  try {
+    accountData = await getAccountWithTransactions(id);
+  } catch (error) {
+    console.error("Error loading account:", error);
+    return (
+      <div className="space-y-8 px-5">
+        <div className="text-center py-12">
+          <h3 className="text-lg font-medium text-red-500 mb-2">
+            Error loading account
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            There was an error loading this account. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!accountData) {
     notFound();
