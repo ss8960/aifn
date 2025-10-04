@@ -20,12 +20,22 @@ export default function DashboardPage() {
   const loadData = async () => {
     try {
       setLoading(true);
+      console.log("Loading dashboard data...");
       
       // Load accounts and transactions in parallel
       const [accountsData, transactionsData] = await Promise.all([
-        getUserAccounts().catch(() => []),
-        getDashboardData().catch(() => []),
+        getUserAccounts().catch((err) => {
+          console.error("Error loading accounts:", err);
+          return [];
+        }),
+        getDashboardData().catch((err) => {
+          console.error("Error loading transactions:", err);
+          return [];
+        }),
       ]);
+
+      console.log("Accounts loaded:", accountsData);
+      console.log("Transactions loaded:", transactionsData);
 
       setAccounts(accountsData || []);
       setTransactions(transactionsData || []);
