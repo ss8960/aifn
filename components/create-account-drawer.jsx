@@ -42,7 +42,7 @@ export function CreateAccountDrawer({ children }) {
     defaultValues: {
       name: "",
       type: "CURRENT",
-      balance: "",
+      balance: 0, // Start with number instead of string
       isDefault: false,
     },
   });
@@ -136,13 +136,20 @@ export function CreateAccountDrawer({ children }) {
                 min="0"
                 placeholder="0.00"
                 {...register("balance", {
-                  valueAsNumber: false, // Keep as string for form handling
+                  valueAsNumber: true, // Convert to number
                 })}
+                onChange={(e) => {
+                  // Handle the change and update the form value
+                  const value = parseFloat(e.target.value);
+                  if (!isNaN(value)) {
+                    setValue("balance", value);
+                  }
+                }}
                 onBlur={(e) => {
                   // Format to 2 decimal places on blur
                   const value = parseFloat(e.target.value);
                   if (!isNaN(value)) {
-                    setValue("balance", value.toFixed(2));
+                    setValue("balance", Math.round(value * 100) / 100);
                   }
                 }}
               />
