@@ -1,4 +1,12 @@
-# Database (Supabase/PostgreSQL)
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+
+console.log('🔧 AIFN Environment Setup');
+console.log('========================\n');
+
+const envContent = `# Database (Supabase/PostgreSQL)
 # Replace with your actual Supabase connection string
 DATABASE_URL="postgresql://postgres:password@db.zhmzcxqajszqicagcdvq.supabase.co:6543/postgres"
 DIRECT_URL="postgresql://postgres:password@db.zhmzcxqajszqicagcdvq.supabase.co:6543/postgres"
@@ -31,3 +39,21 @@ INNGEST_EVENT_KEY="your_inngest_event_key_here"
 # Next.js
 NEXTAUTH_SECRET="your_nextauth_secret_here"
 NEXTAUTH_URL="http://localhost:3000"
+`;
+
+const envPath = path.join(process.cwd(), '.env.local');
+
+try {
+  fs.writeFileSync(envPath, envContent);
+  console.log('✅ Created .env.local file');
+  console.log('📝 Please edit .env.local and add your actual API keys');
+  console.log('🔗 Database URL is set to your Supabase instance');
+  console.log('\n📋 Next steps:');
+  console.log('1. Edit .env.local with your actual API keys');
+  console.log('2. Run: npm run dev');
+  console.log('3. Test account creation');
+} catch (error) {
+  console.error('❌ Error creating .env.local:', error.message);
+  console.log('\n📝 Please create .env.local manually with the following content:');
+  console.log(envContent);
+}
