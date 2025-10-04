@@ -63,6 +63,9 @@ export function CreateAccountDrawer({ children }) {
       toast.success("Account created successfully");
       reset();
       setOpen(false);
+      
+      // Trigger refresh event for dashboard
+      window.dispatchEvent(new CustomEvent('accountCreated'));
     }
   }, [newAccount, reset]);
 

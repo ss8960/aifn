@@ -17,35 +17,49 @@ export default function DashboardPage() {
   const [budgetData, setBudgetData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Load accounts and transactions in parallel
-        const [accountsData, transactionsData] = await Promise.all([
-          getUserAccounts().catch(() => []),
-          getDashboardData().catch(() => []),
-        ]);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load accounts and transactions in parallel
+      const [accountsData, transactionsData] = await Promise.all([
+        getUserAccounts().catch(() => []),
+        getDashboardData().catch(() => []),
+      ]);
 
-        setAccounts(accountsData || []);
-        setTransactions(transactionsData || []);
+      setAccounts(accountsData || []);
+      setTransactions(transactionsData || []);
 
-        // Load budget data if we have a default account
-        const defaultAccount = accountsData?.find((account) => account.isDefault);
-        if (defaultAccount) {
-          const budget = await getCurrentBudget(defaultAccount.id).catch(() => null);
-          setBudgetData(budget);
-        }
-      } catch (error) {
-        console.error("Dashboard data loading error:", error);
-        // Keep empty state
-      } finally {
-        setLoading(false);
+      // Load budget data if we have a default account
+      const defaultAccount = accountsData?.find((account) => account.isDefault);
+      if (defaultAccount) {
+        const budget = await getCurrentBudget(defaultAccount.id).catch(() => null);
+        setBudgetData(budget);
       }
+    } catch (error) {
+      console.error("Dashboard data loading error:", error);
+      // Keep empty state
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Listen for account creation events
+  useEffect(() => {
+    const handleAccountCreated = () => {
+      loadData();
     };
 
-    loadData();
+    // Listen for custom events
+    window.addEventListener('accountCreated', handleAccountCreated);
+    
+    return () => {
+      window.removeEventListener('accountCreated', handleAccountCreated);
+    };
   }, []);
 
   if (loading) {
