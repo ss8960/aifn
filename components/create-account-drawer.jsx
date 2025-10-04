@@ -133,8 +133,18 @@ export function CreateAccountDrawer({ children }) {
                 id="balance"
                 type="number"
                 step="0.01"
+                min="0"
                 placeholder="0.00"
-                {...register("balance")}
+                {...register("balance", {
+                  valueAsNumber: false, // Keep as string for form handling
+                })}
+                onBlur={(e) => {
+                  // Format to 2 decimal places on blur
+                  const value = parseFloat(e.target.value);
+                  if (!isNaN(value)) {
+                    setValue("balance", value.toFixed(2));
+                  }
+                }}
               />
               {errors.balance && (
                 <p className="text-sm text-red-500">{errors.balance.message}</p>
