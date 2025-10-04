@@ -25,13 +25,27 @@ export async function getUserAccounts() {
       return [];
     }
 
-    const user = await db.user.findUnique({
+    let user = await db.user.findUnique({
       where: { clerkUserId: userId },
     });
 
     if (!user) {
-      console.log("User not found, returning empty accounts");
-      return [];
+      // Create user if they don't exist (fallback for webhook issues)
+      try {
+        user = await db.user.create({
+          data: {
+            clerkUserId: userId,
+            email: "", // Will be updated by webhook
+            firstName: "",
+            lastName: "",
+          },
+        });
+        console.log("Created user fallback in getUserAccounts:", userId);
+      } catch (createError) {
+        console.error("Error creating user fallback in getUserAccounts:", createError);
+        console.log("User not found, returning empty accounts");
+        return [];
+      }
     }
 
     const accounts = await db.account.findMany({
@@ -90,12 +104,26 @@ export async function createAccount(data) {
       throw new Error("Request blocked");
     }
 
-    const user = await db.user.findUnique({
+    let user = await db.user.findUnique({
       where: { clerkUserId: userId },
     });
 
     if (!user) {
-      throw new Error("User not found");
+      // Create user if they don't exist (fallback for webhook issues)
+      try {
+        user = await db.user.create({
+          data: {
+            clerkUserId: userId,
+            email: "", // Will be updated by webhook
+            firstName: "",
+            lastName: "",
+          },
+        });
+        console.log("Created user fallback:", userId);
+      } catch (createError) {
+        console.error("Error creating user fallback:", createError);
+        throw new Error("User not found and could not be created");
+      }
     }
 
     // Convert balance to float before saving
