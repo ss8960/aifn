@@ -6,10 +6,12 @@ const path = require('path');
 console.log('🔧 AIFN Environment Setup');
 console.log('========================\n');
 
-const envContent = `# Database (Supabase/PostgreSQL)
-# Replace with your actual Supabase connection string
-DATABASE_URL="postgresql://postgres:password@db.zhmzcxqajszqicagcdvq.supabase.co:6543/postgres"
-DIRECT_URL="postgresql://postgres:password@db.zhmzcxqajszqicagcdvq.supabase.co:6543/postgres"
+const envContent = `# Database (Supabase/PostgreSQL with AWS)
+# Connect to Supabase via connection pooling
+DATABASE_URL="postgresql://postgres.zhmzcxqajszqicagcdvq:pleaseworkoutelsei'llremainjoblossjaimatadi@aws-1-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Direct connection to the database. Used for migrations
+DIRECT_URL="postgresql://postgres.zhmzcxqajszqicagcdvq:pleaseworkoutelsei'llremainjoblossjaimatadi@aws-1-us-east-2.pooler.supabase.com:5432/postgres"
 
 # Clerk Authentication
 # Get these from https://clerk.com
