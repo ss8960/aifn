@@ -114,9 +114,8 @@ export async function createAccount(data) {
         user = await db.user.create({
           data: {
             clerkUserId: userId,
-            email: "", // Will be updated by webhook
-            firstName: "",
-            lastName: "",
+            email: `user-${userId}@temp.local`, // Temporary email to satisfy unique constraint
+            name: "User", // Use name field instead of firstName/lastName
           },
         });
         console.log("Created user fallback:", userId);

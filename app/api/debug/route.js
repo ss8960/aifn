@@ -27,9 +27,8 @@ export async function GET() {
         user = await db.user.create({
           data: {
             clerkUserId: userId,
-            email: "test@example.com",
-            firstName: "Test",
-            lastName: "User",
+            email: `user-${userId}@temp.local`,
+            name: "Test User",
           },
         });
         results.user = user;

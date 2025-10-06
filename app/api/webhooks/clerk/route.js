@@ -51,9 +51,8 @@ export async function POST(req) {
       await db.user.create({
         data: {
           clerkUserId: id,
-          email: email_addresses[0]?.email_address || "",
-          firstName: first_name || "",
-          lastName: last_name || "",
+          email: email_addresses[0]?.email_address || `user-${id}@temp.local`,
+          name: first_name && last_name ? `${first_name} ${last_name}` : first_name || last_name || "User",
         },
       });
 
